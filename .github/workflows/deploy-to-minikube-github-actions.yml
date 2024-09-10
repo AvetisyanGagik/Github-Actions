@@ -14,10 +14,6 @@ jobs:
       run: kubectl get pods -A
     - name: Build image
       run: |
-          while [[ $(kubectl get pods -l app=nodejs-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
-            echo "Waiting for pod to be ready..." && sleep 5;
-          done
-
           export SHELL=/bin/bash
           eval $(minikube -p minikube docker-env)
           docker build -f ./Dockerfile -t devopshint/node-app:latest .
@@ -28,5 +24,8 @@ jobs:
         kubectl apply -f k8s-node-app.yaml
     - name: Test service URLs
       run: |
+          while [[ $(kubectl get pods -l app=nodejs-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
+            echo "Waiting for pod to be ready..." && sleep 5;
+          done
           minikube service list
           minikube service nodejs-app --url
