@@ -26,6 +26,7 @@ jobs:
       run: |
           while [[ $(kubectl get pods -l app=nodejs-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
             echo "Waiting for pod to be ready..." && sleep 5;
+            minikube service list
+            minikube service nodejs-app --url
           done
-          minikube service list
-          minikube service nodejs-app --url
+          
